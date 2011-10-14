@@ -32,10 +32,10 @@ function Entity:move(velocity)
 		local minVel, minNorm = 1, nil
 		for y = math.floor(miny / 32), math.floor(maxy / 32) do
 			for x = math.floor(minx / 32), math.floor(maxx / 32) do
-				local other = (state.objects[y] or empty)[x]
+				local shape = (state.bounds[y] or empty)[x]
 
-				if other then -- curse you lua, should be continue
-					local fracVel, normal = Polygon.intersects(self.shape, other.shape, velocity)
+				if shape then -- curse you lua, should be continue
+					local fracVel, normal = Polygon.intersects(self.shape, shape, velocity)
 					if fracVel < minVel then
 						minVel = fracVel
 						minNorm = normal

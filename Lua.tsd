@@ -1,0 +1,50 @@
+#tileset
+#tileset
+
+#tilebitmap tiles/<TileSetIdentifier>.png 512
+#end tilebitmap
+
+#file tiles/<TileSetIdentifier>.lua
+local quads = {}
+for i = 1, <TileCount - 1> do
+	quads[<TileCount> - i] = love.graphics.newQuad(
+		(i - 1) % <HorizontalTileCount> * <TileWidth>,
+		math.floor((i - 1) / <HorizontalTileCount>) * <TileHeight>,
+		<TileWidth>, <TileHeight>,
+		<TileSetBitmapWidth>, <TileSetBitmapHeight>
+	)
+end
+
+return \"tiles/<TileSetIdentifier>.png\", quads
+#end file
+
+#map
+
+#file levels/<MapIdentifier>.lua
+require "state"
+require "polygon"
+require "vector"
+
+local image, quads = loadfile(\"tiles/<TileSetIdentifier>.lua\")()
+
+local tiles =
+#mapdata " {\n[0]={ " "," ",\n	  " " },\n	{ " " }\n}"
+[<X>]=quads[<TileNumber>]
+#end mapdata
+
+local bounds =
+#mapdata " {\n[0]={ " "," ",\n	  " " },\n	{ " " }\n}"
+[<X>]=<Bounds>
+#end mapdata
+
+tiles.tileWidth = <TileWidth>
+tiles.tileHeight = <TileHeight>
+tiles.width = <MapWidth>
+tiles.height = <MapHeight>
+
+return State:new(image, tiles, bounds)
+#end file
+
+#end map
+
+#end tileset

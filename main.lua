@@ -1,34 +1,15 @@
 require "player"
-require "block"
 require "polygon"
 
 local player
 
-state = {
-	objects = {},
-	draw = {}
-}
-
 function love.load()
 	love.graphics.setBackgroundColor(255, 255, 255)
 
-	player = Player:new(32, 32)
-	state.draw[#state.draw + 1] = player
+	state = require "levels.start"
 
-	for y = 1, math.floor(600 / 32) do
-		state.objects[y] = {}
-		if 7 <= y and y < 11 then
-			state.objects[y][1] = Block:new(32 * 1, 32 * y)
-			state.objects[y][10] = Block:new(32 * 10, 32 * y)
-			state.draw[#state.draw + 1] = state.objects[y][1]
-			state.draw[#state.draw + 1] = state.objects[y][10]
-		elseif y == 11 then
-			for x = 1, 10 do
-				state.objects[y][x] = Block:new(32 * x, 32 * y)
-				state.draw[#state.draw + 1] = state.objects[y][x]
-			end
-		end
-	end
+	player = Player:new(32, 32)
+	state:addEntity(player)
 end
 
 --[[
@@ -87,9 +68,7 @@ function love.keyreleased(key)
 end
 
 function love.draw()
-	for _, object in pairs(state.draw) do
-		object:draw()
-	end
+	state:draw()
 
 	love.graphics.setCaption(love.timer.getFPS() .. " fps")
 	love.graphics.setColor(0, 0, 0, 255)
