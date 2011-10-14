@@ -3,17 +3,31 @@ require "block"
 require "polygon"
 
 local player
-local blocks = {}
+
+state = {
+	objects = {},
+	draw = {}
+}
 
 function love.load()
 	love.graphics.setBackgroundColor(255, 255, 255)
 
 	player = Player:new(32, 32)
-	for i = 1, 10 do
-		blocks[#blocks + 1] = Block:new(32 * i, 32 * 11)
-	end
-	for i = 1, 3 do
-		blocks[#blocks + 1] = Block:new(32 * 10, 32 * (11 - i))
+	state.draw[#state.draw + 1] = player
+
+	for y = 1, math.floor(600 / 32) do
+		state.objects[y] = {}
+		if 7 <= y and y < 11 then
+			state.objects[y][1] = Block:new(32 * 1, 32 * y)
+			state.objects[y][10] = Block:new(32 * 10, 32 * y)
+			state.draw[#state.draw + 1] = state.objects[y][1]
+			state.draw[#state.draw + 1] = state.objects[y][10]
+		elseif y == 11 then
+			for x = 1, 10 do
+				state.objects[y][x] = Block:new(32 * x, 32 * y)
+				state.draw[#state.draw + 1] = state.objects[y][x]
+			end
+		end
 	end
 end
 
@@ -55,31 +69,6 @@ function love.run()
 end
 ]]
 
--- TODO: this should be in entity and access blocks through a global gamestate or something
-function Entity:move(velocity)
-	-- TODO: this should delegate collision response to the entity itself
-	local loops = 0
-	while velocity:magnitude() > 0 do
-		local minVel, minNorm = 1, nil
-		for _, other in pairs(blocks) do
-			local fracVel, normal = Polygon.intersects(self.shape, other.shape, velocity)
-			if fracVel < minVel then
-				minVel = fracVel
-				minNorm = normal
-			end
-		end
-
-		local vel = minVel * velocity
-		self.x = self.x + vel.x
-		self.y = self.y + vel.y
-		self.shape = self.shape + vel
-
-		velocity = velocity - vel
-		minNorm = minNorm or Vector:new(0, 0)
-		velocity = velocity - Vector.dot(velocity, minNorm) * minNorm
-	end
-end
-
 function love.update()
 	player:update()
 	player:move(Vector:new(player.xspeed, player.yspeed))
@@ -98,9 +87,8 @@ function love.keyreleased(key)
 end
 
 function love.draw()
-	player:draw()
-	for _, block in pairs(blocks) do
-		block:draw()
+	for _, object in pairs(state.draw) do
+		object:draw()
 	end
 
 	love.graphics.setCaption(love.timer.getFPS() .. " fps")

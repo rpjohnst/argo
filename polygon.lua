@@ -80,13 +80,15 @@ function Polygon.intersects(a, b, velocity)
 		else
 			local d = diff(mina, maxa, minb, maxb)
 			fracVel = d >= 0 and 1 or -math.huge -- curse you lua, we need continue
-			-- negative diff means skip this axis, so we give -math.huge instead of 0
-			-- if we gave 0, this axis could be *before* the correct normal, stealing its spot
 		end
 
+		-- early out if we don't collide
 		if fracVel == 1 then
 			return 1, nil
-		elseif fracVel > maxVel then
+		end
+
+		-- TODO: should we break the tie in fracVels if we're on a corner?
+		if fracVel > maxVel then
 			maxVel = fracVel
 			normal = axis
 		end
