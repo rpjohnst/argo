@@ -43,4 +43,10 @@ end
 
 function Player:draw()
 	love.graphics.draw(sprite, math.floor(self.x), math.floor(self.y), 0, 1, 1, 0, 0)
+
+	love.graphics.setCaption(love.timer.getFPS() .. " fps")
+	love.graphics.setColor(0, 0, 0, 255)
+	love.graphics.print(self.x .. ", " .. self.y, 0, 0)
+	love.graphics.print(self.xspeed .. ", " .. self.yspeed, 0, 11)
+	love.graphics.setColor(255, 255, 255, 255)
 end

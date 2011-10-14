@@ -1,17 +1,3 @@
-require "player"
-require "polygon"
-
-local player
-
-function love.load()
-	love.graphics.setBackgroundColor(255, 255, 255)
-
-	state = require "levels.start"
-
-	player = Player:new(32, 32)
-	state:addEntity(player)
-end
-
 --[[
 function love.run()
 	love.load(arg)
@@ -50,13 +36,17 @@ function love.run()
 end
 ]]
 
+function love.load()
+	love.graphics.setBackgroundColor(255, 255, 255)
+	state = require "levels.start"
+end
+
 function love.update()
-	player:update()
-	player:move(Vector:new(player.xspeed, player.yspeed))
+	state:update()
 end
 
 function love.keypressed(key)
-	player:keypressed(key)
+	state:keypressed(key)
 
 	if key == "escape" then
 		love.event.push("q")
@@ -64,15 +54,9 @@ function love.keypressed(key)
 end
 
 function love.keyreleased(key)
-	player:keyreleased(key)
+	state:keyreleased(key)
 end
 
 function love.draw()
 	state:draw()
-
-	love.graphics.setCaption(love.timer.getFPS() .. " fps")
-	love.graphics.setColor(0, 0, 0, 255)
-	love.graphics.print(player.x .. ", " .. player.y, 0, 0)
-	love.graphics.print(player.xspeed .. ", " .. player.yspeed, 0, 11)
-	love.graphics.setColor(255, 255, 255, 255)
 end

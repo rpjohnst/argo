@@ -37,12 +37,17 @@ local bounds =
 [<X>]=<Bounds>
 #end mapdata
 
+local codes =
+#mapdata " {\n[0]={ " "," ",\n	  " " },\n	{ " " }\n}"
+[<X>]=<MapCode>
+#end mapdata
+
 tiles.tileWidth = <TileWidth>
 tiles.tileHeight = <TileHeight>
 tiles.width = <MapWidth>
 tiles.height = <MapHeight>
 
-return State:new(image, tiles, bounds)
+return State:new(image, tiles, bounds, codes)
 #end file
 
 #end map
