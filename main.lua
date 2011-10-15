@@ -1,40 +1,28 @@
---[[
 function love.run()
 	love.load(arg)
 
 	local nextFrame = love.timer.getTime()
 	while true do
-		while love.timer.getTime() < nextFrame do
-			love.timer.step() -- update fps
-			love.update()
-		end
+		love.timer.step()
 
-		if love.graphics then
-			love.graphics.clear()
-			if love.draw then
-				love.draw()
-			end
-		end
-
-		if love.events then
+		while nextFrame < love.timer.getTime() do
 			for e, a, b, c in love.event.poll() do
 				if e == "q" then
-					if not love.quit or not love.quit() then
-						if love.audio then
-							love.audio.stop()
-						end
-						return
-					end
+					love.audio.stop()
+					return
 				end
 				love.handlers[e](a, b, c)
 			end
+
+			love.update()
+			nextFrame = nextFrame + 1 / 60
 		end
 
-		if love.timer then love.timer.sleep(1) end
-		if love.graphics then love.graphics.present() end
+		love.graphics.clear()
+		love.draw()
+		love.graphics.present()
 	end
 end
-]]
 
 function love.load()
 	love.graphics.setBackgroundColor(255, 255, 255)
@@ -59,4 +47,7 @@ end
 
 function love.draw()
 	state:draw()
+end
+
+function love.quit()
 end
