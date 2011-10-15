@@ -2,12 +2,13 @@ require "controls"
 require "polygon"
 require "vector"
 
-Player = {}
+local Player = {}
 Player.__index = Player
 
-local sprite = love.graphics.newImage("player.png")
+local sequences = require "maps.player"
+local sprite = love.graphics.newImage(sequences.image)
 
-function Player:new(x, y, state)
+function Player:new(x, y, data, state)
 	local player = {}
 
 	player.x = x
@@ -63,3 +64,5 @@ function Player:draw()
 	love.graphics.print(self.velocity.x .. ", " .. self.velocity.y, 0, 11)
 	love.graphics.setColor(255, 255, 255, 255)
 end
+
+return Player

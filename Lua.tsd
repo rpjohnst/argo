@@ -5,8 +5,8 @@
 
 #file tiles/<TileSetIdentifier>.lua
 local quads = {}
-for i = 1, <TileCount - 1> do
-	quads[<TileCount> - i] = love.graphics.newQuad(
+for i = 1, <TileCount> do
+	quads[i] = love.graphics.newQuad(
 		(i - 1) % <HorizontalTileCount> * <TileWidth>,
 		math.floor((i - 1) / <HorizontalTileCount>) * <TileHeight>,
 		<TileWidth>, <TileHeight>,
@@ -19,7 +19,7 @@ return \"tiles/<TileSetIdentifier>.png\", quads
 
 #map
 
-#file levels/<MapIdentifier>.lua
+#file maps/<MapIdentifier>.lua
 require "state"
 require "polygon"
 require "vector"
@@ -27,28 +27,50 @@ require "vector"
 local image, quads = loadfile(\"tiles/<TileSetIdentifier>.lua\")()
 
 local tiles =
-#mapdata " {\n[0]={ " "," ",\n	  " " },\n	{ " " }\n}"
+#mapdata " {\n	[0]={ " "," ",\n	  " " },\n	{ " " }\n}"
 [<X>]=quads[<TileNumber>]
 #end mapdata
 
 local bounds =
-#mapdata " {\n[0]={ " "," ",\n	  " " },\n	{ " " }\n}"
+#mapdata " {\n	[0]={ " "," ",\n	  " " },\n	{ " " }\n}"
 [<X>]=<Bounds>
 #end mapdata
 
 local codes =
-#mapdata " {\n[0]={ " "," ",\n	  " " },\n	{ " " }\n}"
-[<X>]=<MapCode>
+#mapdata " {\n	[0]={ " "," ",\n	  " " },\n	{ " " }\n}"
+[<X>]=\"<MapCode:\"%02x\">\"
 #end mapdata
+
+local sequences = {
+	image = image,
+#sequence ","
+	[<SequenceNumber>] =
+#sequencedata " { " "," " }"
+[<Frame>]=quads[<TileNumber>]
+#end sequencedata
+#end sequence
+}
 
 tiles.tileWidth = <TileWidth>
 tiles.tileHeight = <TileHeight>
 tiles.width = <MapWidth>
 tiles.height = <MapHeight>
 
-return State:new(image, tiles, bounds, codes)
+if \"<MapIdentifier>\" ~= \"<TileSetIdentifier>\" then
+	return State:new(image, tiles, bounds, codes)
+else
+	return sequences
+end
 #end file
 
 #end map
 
 #end tileset
+
+#file maps.lua
+return {
+#tileset
+	[<TileSetNumber>] = \"<TileSetIdentifier>\",
+#end tileset
+}
+#end file

@@ -1,6 +1,5 @@
 require "polygon"
 require "vector"
-require "player"
 
 State = {}
 State.__index = State
@@ -24,7 +23,7 @@ function State:new(image, tiles, bounds, codes)
 			end
 
 			local bound = bounds[y][x]
-			if bound > 0 then
+			if bound > 0 then -- TODO: add actual bounds checking
 				state.bounds[y][x] = Polygon:new(
 					Vector:new(px, py), Vector:new(px + 32, py),
 					Vector:new(px + 32, py + 32), Vector:new(px, py + 32)
@@ -33,10 +32,12 @@ function State:new(image, tiles, bounds, codes)
 				state.bounds[y][x] = nil
 			end
 
-			local code = codes[y][x]
-			if code == 1 then
-				local player = Player:new(px, py, state)
-				state.entities[#state.entities + 1] = player
+			local data, kind = string.byte(codes[y][x], 1, 2)
+			data, kind = data - string.byte("0"), kind - string.byte("0")
+			if kind > 0 then
+				local objects = require "maps"
+				local object = require("objects." .. objects[kind])
+				state.entities[#state.entities + 1] = object:new(px, py, data, state)
 			end
 		end
 	end
