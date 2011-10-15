@@ -1,5 +1,4 @@
 #tileset
-#tileset
 
 #tilebitmap tiles/<TileSetIdentifier>.png 512
 #end tilebitmap

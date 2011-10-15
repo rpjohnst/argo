@@ -22,6 +22,7 @@ function Player:new(x, y, state)
 	player.velocity = Vector:new(0, 0)
 
 	state:registerMove(player)
+	state:registerKeys(player)
 
 	return setmetatable(player, self)
 end

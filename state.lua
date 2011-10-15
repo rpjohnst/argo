@@ -9,8 +9,10 @@ function State:new(image, tiles, bounds, codes)
 	local state = setmetatable({}, self)
 	state.batch = love.graphics.newSpriteBatch(love.graphics.newImage(image))
 	state.bounds = bounds
+
 	state.entities = {}
 	state.move = {}
+	state.keys = {}
 
 	for y = 0, tiles.height - 1 do
 		for x = 0, tiles.width - 1 do
@@ -102,14 +104,18 @@ function State:moveEntity(entity, velocity)
 	end
 end
 
+function State:registerKeys(entity)
+	self.keys[#self.keys + 1] = entity
+end
+
 function State:keypressed(key)
-	for _, entity in pairs(self.entities) do
+	for _, entity in pairs(self.keys) do
 		entity:keypressed(key)
 	end
 end
 
 function State:keyreleased(key)
-	for _, entity in pairs(self.entities) do
+	for _, entity in pairs(self.keys) do
 		entity:keyreleased(key)
 	end
 end
