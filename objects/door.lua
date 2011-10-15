@@ -5,6 +5,7 @@ Door.__index = Door
 
 local sequences = require "maps.door"
 local sprite = love.graphics.newImage(sequences.image)
+sprite:setFilter("nearest", "nearest")
 
 local shape = Polygon:new(
 	Vector:new(8, 0), Vector:new(24, 0),

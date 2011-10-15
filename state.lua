@@ -5,7 +5,9 @@ State.__index = State
 
 function State:new(image, tiles, bounds, codes)
 	local state = setmetatable({}, self)
-	state.batch = love.graphics.newSpriteBatch(love.graphics.newImage(image))
+	local image = love.graphics.newImage(image)
+	image:setFilter("nearest", "nearest")
+	state.batch = love.graphics.newSpriteBatch(image)
 	state.bounds = bounds
 
 	state.entities = {}
@@ -64,6 +66,9 @@ function State:update()
 end
 
 function State:draw()
+	love.graphics.scale(2, 2)
+	love.graphics.translate(200 - self.player.x, 150 - self.player.y)
+
 	love.graphics.draw(self.batch)
 	for _, entity in pairs(self.entities) do
 		entity:draw()

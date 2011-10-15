@@ -5,6 +5,7 @@ Button.__index = Button
 
 local sequences = require "maps.button"
 local sprite = love.graphics.newImage(sequences.image)
+sprite:setFilter("nearest", "nearest")
 
 local shape = Polygon:new(
 	Vector:new(0, 16), Vector:new(32, 16),

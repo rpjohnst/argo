@@ -6,6 +6,7 @@ Player.__index = Player
 
 local sequences = require "maps.player"
 local sprite = love.graphics.newImage(sequences.image)
+sprite:setFilter("nearest", "nearest")
 
 function Player:new(x, y, data, state)
 	local player = {}
@@ -59,13 +60,7 @@ function Player:keyreleased(key)
 end
 
 function Player:draw()
-	love.graphics.draw(sprite, math.floor(self.x), math.floor(self.y), 0, 1, 1, 0, 0)
-
-	love.graphics.setCaption(love.timer.getFPS() .. " fps")
-	love.graphics.setColor(0, 0, 0, 255)
-	love.graphics.print(self.x .. ", " .. self.y, 0, 0)
-	love.graphics.print(self.velocity.x .. ", " .. self.velocity.y, 0, 11)
-	love.graphics.setColor(255, 255, 255, 255)
+	love.graphics.draw(sprite, self.x, self.y, 0, 1, 1, 0, 0)
 end
 
 return Player
