@@ -20,8 +20,10 @@ function Player:new(x, y, data, state)
 	player.velocity = Vector:new(0, 0)
 
 	state:registerMove(player)
+	state:registerSolid(player)
 	state:registerIntersect(player)
 	state:registerKeys(player)
+	state.player = player
 
 	return setmetatable(player, self)
 end

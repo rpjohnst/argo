@@ -104,25 +104,33 @@ function State:moveEntity(entity, velocity)
 		end
 
 		local minVel, minNorm, other = 1, nil, nil
-		local function save(shape)
-			local fracVel, normal = Polygon.move(entity.shape, shape, velocity)
-			if fracVel < minVel then
-				minVel = fracVel
-				minNorm = normal
-				other = shape
-			end
-		end
 
 		for y = math.floor(miny / 32), math.floor(maxy / 32) do
 			for x = math.floor(minx / 32), math.floor(maxx / 32) do
 				local shape = (self.bounds[y] or empty)[x]
-				if shape then save(shape) end -- curse you lua, should be continue
+				if shape then -- curse you lua, should be continue
+					local fracVel, normal = Polygon.move(entity.shape, shape, velocity)
+					if fracVel < minVel then
+						minVel = fracVel
+						minNorm = normal
+						other = shape
+					end
+				end
 			end
 		end
 
 		for _, object in pairs(self.solid) do
-			local shape = object.shape
-			if shape then save(shape) end -- curse you lua, should be continue
+			if object ~= entity then -- curse you lua, should be continue
+				local shape = object.shape
+				if shape then -- curse you lua, should be continue
+					local fracVel, normal = Polygon.move(entity.shape, shape, velocity)
+					if fracVel < minVel then
+						minVel = fracVel
+						minNorm = normal
+						other = object
+					end
+				end
+			end
 		end
 
 		if minVel == 1 then
@@ -154,10 +162,12 @@ function State:placeFree(entity, displacement)
 	end
 
 	for _, object in pairs(self.solid) do
-		local shape = object.shape
-		if shape then -- curse you lua, should be continue
-			if Polygon.intersects(eshape, shape) then
-				return false
+		if object ~= entity then -- curse you lua, should be continue
+			local shape = object.shape
+			if shape then -- curse you lua, should be continue
+				if Polygon.intersects(eshape, shape) then
+					return false
+				end
 			end
 		end
 	end
