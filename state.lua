@@ -96,7 +96,8 @@ function State:moveEntity(entity, velocity)
 			entity.shape = entity.shape + velocity
 			break
 		else
-			velocity = entity:collide(minVel, minNorm, other)
+			entity:collide(minVel, minNorm, other)
+			velocity = entity.velocity
 		end
 	end
 end

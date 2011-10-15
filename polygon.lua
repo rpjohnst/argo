@@ -70,16 +70,15 @@ function Polygon.intersects(a, b, velocity)
 		local mina, maxa = a:project(axis)
 		local minb, maxb = b:project(axis)
 
-		local axisVel, fracVel = Vector.dot(velocity, axis), 0
-		if axisVel < 0 then
+		local axisVel, fracVel = Vector.dot(velocity, axis), -math.huge
+		if axisVel < 0 and mina >= maxb then
 			local d = diff(mina + axisVel, maxa, minb, maxb)
 			fracVel = math.min((axisVel - d) / axisVel, 1)
-		elseif axisVel > 0 then
-			local d = diff(mina, maxa + axisVel, minb, maxb)
-			fracVel = math.min((axisVel + d) / axisVel, 1)
-		else
+		elseif axisVel == 0 then
 			local d = diff(mina, maxa, minb, maxb)
 			fracVel = d >= 0 and 1 or -math.huge -- curse you lua, we need continue
+		elseif axisVel > 0 and mina >= maxb then
+			fracVel = 1
 		end
 
 		-- early out if we don't collide
@@ -87,12 +86,14 @@ function Polygon.intersects(a, b, velocity)
 			return 1, nil
 		end
 
-		-- TODO: should we break the tie in fracVels if we're on a corner?
 		if fracVel > maxVel then
 			maxVel = fracVel
+			normal = axis
+		elseif fracVel == 0 and fracVel == maxVel and Vector.dot(velocity, axis) > Vector.dot(velocity, normal) then
 			normal = axis
 		end
 	end
 
+	assert(maxVel >= 0, "inside block")
 	return maxVel, normal
 end

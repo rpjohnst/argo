@@ -37,9 +37,8 @@ function Player:collide(avail, normal, other)
 	self.y = self.y + vel.y
 	self.shape = self.shape + vel
 
-	--[[self.velocity = self.velocity - vel
-	self.velocity = self.velocity - Vector.dot(self.velocity, normal) * normal]]
-	return self.velocity - vel - Vector.dot(self.velocity - vel, normal) * normal
+	self.velocity = self.velocity - vel
+	self.velocity = self.velocity - Vector.dot(self.velocity, normal) * normal
 end
 
 function Player:keypressed(key)
