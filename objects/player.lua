@@ -34,10 +34,12 @@ function Player:move()
 	self.velocity.x = (controls.right() and 4 or 0) - (controls.left() and 4 or 0)
 	self.velocity.y = math.min(self.velocity.y + 0.5, 12)
 
+	self.frame = self.frame + (controls.right() and 1 or 0) - (controls.left() and 1 or 0)
+
 	local scale = math.min(1 - (self.y - 500) / 500, 1)
 	love.graphics.setBackgroundColor(128 * scale, 200 * scale, 255 * scale)
 	if self.y > 800 then
-		state = loadfile("maps/start.lua")()
+		state = love.filesystem.load("maps/start.lua")()
 	end
 end
 

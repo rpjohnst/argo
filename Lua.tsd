@@ -22,7 +22,7 @@ return \"tiles/<TileSetIdentifier>.png\", quads
 #file maps/<MapIdentifier>.lua
 require "state"
 
-local image, quads = loadfile(\"tiles/<TileSetIdentifier>.lua\")()
+local image, quads = love.filesystem.load(\"tiles/<TileSetIdentifier>.lua\")()
 
 local tiles =
 #mapdata " {\n	[0]={ " "," ",\n	  " " },\n	{ " " }\n}"
