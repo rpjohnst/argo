@@ -1,6 +1,5 @@
 require "controls"
 require "polygon"
-require "vector"
 
 local Player = {}
 Player.__index = Player
@@ -14,15 +13,14 @@ function Player:new(x, y, data, state)
 	player.x = x
 	player.y = y
 	player.shape = Polygon:new(
-		Vector:new(x, y),
-		Vector:new(x + 32, y),
-		Vector:new(x + 32, y + 32),
-		Vector:new(x, y + 32)
+		Vector:new(x, y), Vector:new(x + 32, y),
+		Vector:new(x + 32, y + 32), Vector:new(x, y + 32)
 	)
 
 	player.velocity = Vector:new(0, 0)
 
 	state:registerMove(player)
+	state:registerIntersect(player)
 	state:registerKeys(player)
 
 	return setmetatable(player, self)
@@ -41,6 +39,9 @@ function Player:collide(avail, normal, other)
 
 	self.velocity = self.velocity - vel
 	self.velocity = self.velocity - Vector.dot(self.velocity, normal) * normal
+end
+
+function Player:intersect(other)
 end
 
 function Player:keypressed(key)

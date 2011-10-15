@@ -1,5 +1,4 @@
 require "polygon"
-require "vector"
 
 State = {}
 State.__index = State
@@ -11,6 +10,8 @@ function State:new(image, tiles, bounds, codes)
 
 	state.entities = {}
 	state.move = {}
+	state.solid = {}
+	state.intersect = {}
 	state.keys = {}
 
 	for y = 0, tiles.height - 1 do
@@ -45,15 +46,40 @@ function State:new(image, tiles, bounds, codes)
 	return state
 end
 
-function State:registerMove(entity)
-	self.move[#self.move + 1] = entity
-end
-
 function State:update()
 	for _, entity in pairs(self.move) do
 		entity:move()
 		self:moveEntity(entity, entity.velocity)
 	end
+
+	for i = 1, #self.intersect do
+		for j = i + 1, #self.intersect do
+			local a, b = self.intersect[i], self.intersect[j]
+			if Polygon.intersects(a.shape, b.shape) then
+				a:intersect(b)
+				b:intersect(a)
+			end
+		end
+	end
+end
+
+function State:draw()
+	love.graphics.draw(self.batch)
+	for _, entity in pairs(self.entities) do
+		entity:draw()
+	end
+end
+
+function State:registerMove(entity)
+	self.move[#self.move + 1] = entity
+end
+
+function State:registerSolid(entity)
+	self.solid[#self.solid + 1] = entity
+end
+
+function State:registerIntersect(entity)
+	self.intersect[#self.intersect + 1] = entity
 end
 
 local xnorm = Vector:new(1, 0)
@@ -78,19 +104,25 @@ function State:moveEntity(entity, velocity)
 		end
 
 		local minVel, minNorm, other = 1, nil, nil
+		local function save(shape)
+			local fracVel, normal = Polygon.move(entity.shape, shape, velocity)
+			if fracVel < minVel then
+				minVel = fracVel
+				minNorm = normal
+				other = shape
+			end
+		end
+
 		for y = math.floor(miny / 32), math.floor(maxy / 32) do
 			for x = math.floor(minx / 32), math.floor(maxx / 32) do
 				local shape = (self.bounds[y] or empty)[x]
-
-				if shape then -- curse you lua, should be continue
-					local fracVel, normal = Polygon.intersects(entity.shape, shape, velocity)
-					if fracVel < minVel then
-						minVel = fracVel
-						minNorm = normal
-						other = shape
-					end
-				end
+				if shape then save(shape) end -- curse you lua, should be continue
 			end
+		end
+
+		for _, object in pairs(self.solid) do
+			local shape = object.shape
+			if shape then save(shape) end -- curse you lua, should be continue
 		end
 
 		if minVel == 1 then
@@ -103,6 +135,34 @@ function State:moveEntity(entity, velocity)
 			velocity = entity.velocity
 		end
 	end
+end
+
+function State:placeFree(entity, displacement)
+	local eshape = entity.shape + displacement
+	local minx, maxx = eshape:project(xnorm)
+	local miny, maxy = eshape:project(ynorm)
+	
+	for y = math.floor(miny / 32), math.floor(maxy / 32) do
+		for x = math.floor(minx / 32), math.floor(maxx / 32) do
+			local shape = (self.bounds[y] or empty)[x]
+			if shape then -- curse you lua, should be continue
+				if Polygon.intersects(eshape, shape) then
+					return false
+				end
+			end
+		end
+	end
+
+	for _, object in pairs(self.solid) do
+		local shape = object.shape
+		if shape then -- curse you lua, should be continue
+			if Polygon.intersects(eshape, shape) then
+				return false
+			end
+		end
+	end
+
+	return true
 end
 
 function State:registerKeys(entity)
@@ -118,12 +178,5 @@ end
 function State:keyreleased(key)
 	for _, entity in pairs(self.keys) do
 		entity:keyreleased(key)
-	end
-end
-
-function State:draw()
-	love.graphics.draw(self.batch)
-	for _, entity in pairs(self.entities) do
-		entity:draw()
 	end
 end

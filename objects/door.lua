@@ -1,11 +1,31 @@
+require "polygon"
+
 local Door = {}
 Door.__index = Door
 
 local sequences = require "maps.door"
 local sprite = love.graphics.newImage(sequences.image)
 
+local shape = Polygon:new(
+	Vector:new(8, 0), Vector:new(24, 0),
+	Vector:new(24, 32), Vector:new(8, 32)
+)
+
 function Door:new(x, y, id, state)
-	return setmetatable({ x = x, y = y, frame = 0 }, self)
+	local door = { x = x, y = y, frame = 0 }
+
+	state.doors = state.doors or {}
+	state.doors[id] = door
+
+	door.shape = shape + Vector:new(x, y)
+	state:registerSolid(door)
+
+	return setmetatable(door, self)
+end
+
+function Door:open()
+	self.shape = self.shape + Vector:new(0, -32)
+	self.frame = 1
 end
 
 function Door:draw()

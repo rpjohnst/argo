@@ -21,8 +21,6 @@ return \"tiles/<TileSetIdentifier>.png\", quads
 
 #file maps/<MapIdentifier>.lua
 require "state"
-require "polygon"
-require "vector"
 
 local image, quads = loadfile(\"tiles/<TileSetIdentifier>.lua\")()
 

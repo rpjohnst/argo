@@ -60,7 +60,7 @@ local function diff(mina, maxa, minb, maxb)
 end
 
 -- percentage of velocity, collision normal
-function Polygon.intersects(a, b, velocity)
+function Polygon.move(a, b, velocity)
 	local maxVel, normal = -math.huge, nil
 
 	local anormals, bnormals = a:normals(), b:normals()
@@ -96,4 +96,20 @@ function Polygon.intersects(a, b, velocity)
 
 	assert(maxVel >= 0, "inside block")
 	return maxVel, normal
+end
+
+-- whether polygons intersect
+function Polygon.intersects(a, b)
+	local anormals, bnormals = a:normals(), b:normals()
+	for i = 1, #a + #b do
+		local axis = i <= #a and anormals[i] or bnormals[i - #a]
+		
+		local mina, maxa = a:project(axis)
+		local minb, maxb = b:project(axis)
+
+		local d = diff(mina, maxa, minb, maxb)
+		if d >= 0 then return false end
+	end
+
+	return true
 end
