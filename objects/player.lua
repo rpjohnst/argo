@@ -17,6 +17,7 @@ function Player:new(x, y, data, state)
 		Vector:new(x, y), Vector:new(x + 32, y),
 		Vector:new(x + 32, y + 32), Vector:new(x, y + 32)
 	)
+	player.frame = 0
 
 	player.velocity = Vector:new(0, 0)
 
@@ -66,7 +67,8 @@ function Player:keyreleased(key)
 end
 
 function Player:draw()
-	love.graphics.draw(sprite, self.x, self.y, 0, 1, 1, 0, 0)
+	local quad = sequences[1][self.frame % 8]
+	love.graphics.drawq(sprite, quad, self.x, self.y, 0, 1, 1, 16, 32)
 end
 
 return Player
