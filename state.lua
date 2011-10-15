@@ -16,6 +16,11 @@ function State:new(image, tiles, bounds, codes)
 	state.intersect = {}
 	state.keys = {}
 
+	state.frame = 0
+	state.message = "find the diamond"
+
+	love.graphics.setBackgroundColor(128, 200, 255)
+
 	for y = 0, tiles.height - 1 do
 		for x = 0, tiles.width - 1 do
 			local px, py = x * tiles.tileWidth, y * tiles.tileHeight
@@ -49,6 +54,8 @@ function State:new(image, tiles, bounds, codes)
 end
 
 function State:update()
+	state.frame = state.frame + 1
+
 	for _, entity in pairs(self.move) do
 		entity:move()
 		self:moveEntity(entity, entity.velocity)
@@ -72,6 +79,12 @@ function State:draw()
 	love.graphics.draw(self.batch)
 	for _, entity in pairs(self.entities) do
 		entity:draw()
+	end
+
+	if self.frame < 500 then
+		love.graphics.setColor(0, 0, 0, math.min(255, 500 - self.frame))
+		love.graphics.print(self.message, self.player.x - 150, self.player.y + 100)
+		love.graphics.setColor(255, 255, 255, 255)
 	end
 end
 

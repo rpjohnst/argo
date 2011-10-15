@@ -32,6 +32,12 @@ end
 function Player:move()
 	self.velocity.x = (controls.right() and 4 or 0) - (controls.left() and 4 or 0)
 	self.velocity.y = math.min(self.velocity.y + 0.5, 12)
+
+	local scale = math.min(1 - (self.y - 500) / 500, 1)
+	love.graphics.setBackgroundColor(128 * scale, 200 * scale, 255 * scale)
+	if self.y > 800 then
+		state = loadfile("maps/start.lua")()
+	end
 end
 
 function Player:collide(avail, normal, other)
@@ -48,7 +54,7 @@ function Player:intersect(other)
 end
 
 function Player:keypressed(key)
-	if key == "up" then
+	if key == "up" and not state:placeFree(self, Vector:new(0, 1)) then
 		self.velocity.y = -12
 	end
 end

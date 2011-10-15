@@ -25,7 +25,6 @@ function love.run()
 end
 
 function love.load()
-	love.graphics.setBackgroundColor(255, 255, 255)
 	state = require "maps.start"
 end
 
